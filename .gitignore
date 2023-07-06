@@ -133,4 +133,9 @@ node_modules/
 dist/
 dist.zip
 package-lock.json
-yarn.lock
+*.lock
+local.properties
+.cxx
+.externalNativeBuild
+/captures
+/build

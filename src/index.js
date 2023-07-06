@@ -1,5 +1,8 @@
 const {app, BrowserWindow} = require('electron');
 const path = require('path');
+const fs = require('fs');
+const contextMenu = require('electron-context-menu');
+const config = require(path.join(__dirname, 'config.js'));
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -9,21 +12,82 @@ if (require('electron-squirrel-startup')) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 800,
+    width: 1500,
+    height: 1000,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
-    autoHideMenuBar: true,
+    autoHideMenuBar: true
   });
 
-  // and load the index.html of the app.
-  //mainWindow.loadFile(path.join(__dirname, 'index.html'));
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  // Load the URL from the config file.
+  const url = config.url;
+  mainWindow.loadURL(url);
   mainWindow.setAutoHideMenuBar(true);
-  mainWindow.loadURL("https://music.youtube.com/");
+
+  // Set the context menu.
+  let rightClickMenu = [
+    {
+      label: 'Reload',
+      accelerator: 'CmdOrCtrl+R',
+      click: () => {
+        mainWindow.reload();
+      }
+    },
+    {
+      label: 'Force Reload',
+      accelerator: 'CmdOrCtrl+Shift+R',
+      click: () => {
+        mainWindow.webContents.reloadIgnoringCache();
+      }
+    },
+    {
+      label: 'Go Back',
+      click: () => {
+        mainWindow.webContents.goBack();
+      }
+    },
+    {
+      label: 'Go Forward',
+      click: () => {
+        mainWindow.webContents.goForward();
+      }
+    },
+    {
+      label: 'Zoom In',
+      accelerator: 'Ctrl+Shift+=',
+      click: () => {
+        let zoomLevel = mainWindow.webContents.getZoomLevel();
+        mainWindow.webContents.setZoomLevel(zoomLevel + 1);
+      }
+    },
+    {
+      label: 'Zoom Out',
+      accelerator: 'CmdOrCtrl+-',
+      click: () => {
+        let zoomLevel = mainWindow.webContents.getZoomLevel();
+        mainWindow.webContents.setZoomLevel(zoomLevel - 1);
+      }
+    },
+    {
+      label: 'Reset Zoom',
+      accelerator: 'CmdOrCtrl+0',
+      click: () => {
+        mainWindow.webContents.setZoomLevel(0);
+      }
+    },
+    {
+      label: 'Toggle Full Screen',
+      accelerator: 'F11',
+      click: () => {
+        mainWindow.setFullScreen(!mainWindow.isFullScreen());
+      }
+    },
+  ];
+  contextMenu({
+    window: mainWindow,
+    prepend: (defaultActions, params, browserWindow) => rightClickMenu
+  });
 };
 
 // This method will be called when Electron has finished
@@ -47,6 +111,5 @@ app.on('activate', () => {
     createWindow();
   }
 });
-
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
