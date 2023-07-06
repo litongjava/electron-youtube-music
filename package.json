@@ -32,8 +32,8 @@
     "electron-builder": "^24.4.0"
   },
   "build": {
-    "productName": "electron-openai-chatgpt-study",
-    "appId": "com.litongjava.openai.chatgpt.study",
+    "productName": "electron-youTube-music",
+    "appId": "com.litongjava.youtube.music",
     "directories": {
       "output": "dist"
     },

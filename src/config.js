@@ -1,5 +1,5 @@
 const config = {
-  url: "https://chat.openai.com/"
+  url: "https://music.youtube.com/"
 };
 
 module.exports = config;
